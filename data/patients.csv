@@ -1,0 +1,3 @@
+patient_id,user_id,first_name,last_name,date_of_birth,gender,contact_number,email,address
+1,5,Bob,Hetmeyer,1980-05-15,Male,1234567890,bob@example.com,"123 Patient St, Cityville, State"
+2,8,Sarah,Connor,1992-09-25,Female,9876543210,sarah@example.com,"456 Main St, Townburg, State"
