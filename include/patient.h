@@ -1,9 +1,11 @@
 #ifndef PATIENT_H
 #define PATIENT_H
 
-#include "../include/patient.h"
-#include "../include/user.h"
-#include "../include/common.h"
+#define MAX_PATIENTS 100
+#define PATIENTS_FILE_PATH "../data/patients.csv"
+
+#include "user.h"
+#include "common.h"
 
 typedef struct
 {
@@ -15,13 +17,13 @@ typedef struct
     char gender[10];
     char contactNumber[MAX_CONTACT_LENGTH];
     char email[MAX_EMAIL_LENGTH];
-    char address[MAX_ADDRESS_LENGTH];
+    char city[MAX_CITY_LENGTH];
 } Patient;
 
 // Function declaration
-void loadPatientsFromFile();
+int readPatientsFromFile(Patient patients[]);
+int savePatientsToFile(Patient patients[], int patientCount);
+Patient *searchPatientById(int patientId);
 Patient getPatientData();
-int addPatientToFile(Patient patient);
-int generatePatientId();
-Patient *getPatientById(const int id);
+void addPatient(Patient newPatient);
 #endif // PATIENT_H

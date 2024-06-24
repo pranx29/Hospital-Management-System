@@ -2,78 +2,49 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../include/user.h"
-#include "../include/common.h"
 
-#define MAX_USERS 100
-#define MAX_LINE_LENGTH 256
-#define USERS_FILE_PATH "../data/users.csv"
-
-static User users[MAX_USERS];
-static int numUsers = 0;
-
-void loadUsersFromFile()
+// Function to read users from file to array
+int readUsersFromFile(User users[])
 {
-    FILE *usersFile = fopen(USERS_FILE_PATH, "r");
-    if (usersFile == NULL)
+    FILE *file = fopen(USERS_FILE_PATH, "r");
+    if (file == NULL)
     {
-        fprintf(stderr, "Error opening file: %s\n", USERS_FILE_PATH);
+        perror("Error opening file");
         exit(EXIT_FAILURE);
     }
 
-    char line[MAX_LINE_LENGTH];
-    int row = 0;
-    while (fgets(line, sizeof(line), usersFile))
+    int userCount = 0;
+    while (fscanf(file, "%d,%[^,],%[^,],%[^\n]\n",
+                  &users[userCount].userId,
+                  users[userCount].username,
+                  users[userCount].password,
+                  users[userCount].role) == 4)
     {
-
-        // Skip the first row if it contains column headers
-        if (row == 0)
+        userCount++;
+        if (userCount >= MAX_USERS)
         {
-            row++;
-            continue;
+            printf("Maximum user limit reached. Increase MAX_PATIENTS if needed.\n");
+            break;
         }
-
-        // Split the line by commas
-        char *value = strtok(line, ",");
-        int column = 0;
-
-        while (value != NULL)
-        {
-            removeNewline(value);
-            switch (column)
-            {
-            case 0: // ID
-                users[numUsers].userId = atoi(value);
-                break;
-            case 1: // Username
-                snprintf(users[numUsers].username, sizeof(users[numUsers].username), "%s", value);
-                break;
-            case 2: // Password
-                snprintf(users[numUsers].password, sizeof(users[numUsers].password), "%s", value);
-                break;
-            case 3: // Role
-                
-                snprintf(users[numUsers].role, sizeof(users[numUsers].role), "%s", value);
-                break;
-            }
-            value = strtok(NULL, ",");
-            column++;
-        }
-        numUsers++;
     }
-    fclose(usersFile);
+
+    fclose(file);
+    return userCount;
 }
 
 User *getUserByUsername(const char *username)
 {
-    loadUsersFromFile();
-    for (int i = 0; i < numUsers; ++i)
+    static User users[MAX_USERS];
+    int userCount = readUsersFromFile(users);
+
+    for (int i = 0; i < userCount; i++)
     {
         if (strcmp(users[i].username, username) == 0)
         {
             return &users[i];
         }
     }
-    return NULL;
+    return NULL; // Return NULL if user with given username is not found
 }
 
 int authenticateUser(const char *username, const char *password, const char *role)
@@ -85,22 +56,11 @@ int authenticateUser(const char *username, const char *password, const char *rol
         return user->userId; // Return user id or some identifier to signify successful login
     }
     return -1; // Invalid credentials
-
 }
 
 int generateUserId()
 {
-    loadUsersFromFile();
-    int maxId = 0;
-
-    // Find the maximum patientId in the existing patients
-    for (int i = 0; i < numUsers; ++i)
-    {
-        if (users[i].userId > maxId)
-        {
-            maxId = users[i].userId;
-        }
-    }
-    // Return the next unique patientId (maxId + 1)
-    return maxId + 1;
+    static User users[MAX_USERS];
+    int userCount = readUsersFromFile(users);
+    return users[userCount - 1].userId + 1;
 }

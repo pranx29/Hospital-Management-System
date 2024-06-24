@@ -6,7 +6,7 @@
 #define MAX_NAME_LENGTH 50
 #define MAX_CONTACT_LENGTH 10
 #define MAX_EMAIL_LENGTH 50
-#define MAX_ADDRESS_LENGTH 200
+#define MAX_CITY_LENGTH 200
 
 // Validation function declarations
 int isValidDate(const char *date);

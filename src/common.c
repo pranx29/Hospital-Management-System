@@ -44,7 +44,3 @@ int isValidEmail(const char *email)
         return 0;
     return 1;
 }
-
-void removeNewline(char* str) {
-    str[strcspn(str, "\n")] = '\0';
-}

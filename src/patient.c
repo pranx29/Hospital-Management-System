@@ -2,101 +2,88 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../include/patient.h"
-#include "../include/user.h"
-#include "../include/common.h"
 
-#define MAX_PATIENTS 100
-#define MAX_LINE_LENGTH 1024
-#define PATIENTS_FILE_PATH "../data/patients.csv"
-
-static Patient patients[MAX_PATIENTS];
-static int numPatients = 0;
-
-void loadPatientsFromFile()
+// Function to read patients from file to array
+int readPatientsFromFile(Patient patients[])
 {
-    FILE *patientsFile = fopen(PATIENTS_FILE_PATH, "r");
-    if (patientsFile == NULL)
+    FILE *file = fopen(PATIENTS_FILE_PATH, "r");
+    if (file == NULL)
     {
-        fprintf(stderr, "Error opening file: %s\n", PATIENTS_FILE_PATH);
+        perror("Error opening file");
         exit(EXIT_FAILURE);
     }
 
-    char line[MAX_LINE_LENGTH];
-    int row = 0;
-
-    while (fgets(line, sizeof(line), patientsFile))
+    int patientCount = 0;
+    while (fscanf(file, "%d,%d,%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^\n]\n",
+                  &patients[patientCount].patientId, &patients[patientCount].userId,
+                  patients[patientCount].firstName, patients[patientCount].lastName,
+                  patients[patientCount].dateOfBirth, patients[patientCount].gender,
+                  patients[patientCount].contactNumber, patients[patientCount].email,
+                  patients[patientCount].city) == 9)
     {
-        if (row == 0)
+        patientCount++;
+        if (patientCount >= MAX_PATIENTS)
         {
-            // Skip the header line
-            row++;
-            continue;
+            printf("Maximum patient limit reached. Increase MAX_PATIENTS if needed.\n");
+            break;
         }
-
-        // Split the line by commas
-        char *value = strtok(line, ",");
-        int column = 0;
-
-        while (value != NULL)
-        {
-            switch (column)
-            {
-                removeNewline(value);
-                case 0: // patientId
-                    patients[numPatients].patientId = atoi(value);
-                    break;
-                case 1: // userId
-                    patients[numPatients].userId = atoi(value);
-                    break;
-                case 2: // firstName
-                    snprintf(patients[numPatients].firstName, sizeof(patients[numPatients].firstName), "%s", value);
-                    break;
-                case 3: // lastName
-                    snprintf(patients[numPatients].lastName, sizeof(patients[numPatients].lastName), "%s", value);
-                    break;
-                case 4: // dateOfBirth
-                    snprintf(patients[numPatients].dateOfBirth, sizeof(patients[numPatients].dateOfBirth), "%s", value);
-                    break;
-                case 5: // gender
-                    snprintf(patients[numPatients].gender, sizeof(patients[numPatients].gender), "%s", value);
-                    break;
-                case 6: // contactNumber
-                    snprintf(patients[numPatients].contactNumber, sizeof(patients[numPatients].contactNumber), "%s", value);
-                    break;
-                case 7: // email
-                    snprintf(patients[numPatients].email, sizeof(patients[numPatients].email), "%s", value);
-                    break;
-                case 8: // address
-                    snprintf(patients[numPatients].address, sizeof(patients[numPatients].address), "%s", value);
-                    break;
-            }
-            value = strtok(NULL, ",");
-            column++;
-        }
-
-        numPatients++;
-        row++;
     }
 
-    fclose(patientsFile);
+    fclose(file);
+    return patientCount;
+}
+
+// Function to save patients from array to file
+int savePatientsToFile(Patient patients[], int patientCount)
+{
+    FILE *file = fopen(PATIENTS_FILE_PATH, "w");
+    if (file == NULL)
+    {
+        perror("Error opening file");
+        return 0;
+    }
+
+    for (int i = 0; i < patientCount; i++)
+    {
+        fprintf(file, "%d,%d,%s,%s,%s,%s,%s,%s,%s\n", patients[i].patientId, patients[i].userId,
+                patients[i].firstName, patients[i].lastName, patients[i].dateOfBirth,
+                patients[i].gender, patients[i].contactNumber, patients[i].email,
+                patients[i].city);
+    }
+
+    fclose(file);
+    return 1;
+}
+// Function to search patient by ID
+Patient *searchPatientById(int patientId)
+{
+    static Patient patients[MAX_PATIENTS];
+    int patientCount = readPatientsFromFile(patients);
+
+    for (int i = 0; i < patientCount; i++)
+    {
+        if (patients[i].patientId == patientId)
+        {
+            return &patients[i];
+        }
+    }
+    return NULL; // Return NULL if patient with given ID is not found
 }
 
 Patient getPatientData()
 {
     Patient patient;
-
-    patient.patientId = generatePatientId();
     patient.userId = generateUserId();
 
-    printf("Enter First Name: ");
+    printf("First Name: ");
     scanf("%s", patient.firstName);
 
-    printf("Enter Last Name: ");
+    printf("Last Name: ");
     scanf("%s", patient.lastName);
 
     do
     {
-        printf("Enter Date of Birth (YYYY-MM-DD): ");
+        printf("Date of Birth (YYYY-MM-DD): ");
         scanf("%s", patient.dateOfBirth);
         if (!isValidDate(patient.dateOfBirth))
         {
@@ -106,7 +93,7 @@ Patient getPatientData()
 
     do
     {
-        printf("Enter Gender (Male/Female/Other): ");
+        printf("Gender (Male/Female/Other): ");
         scanf("%s", patient.gender);
         if (!isValidGender(patient.gender))
         {
@@ -116,7 +103,7 @@ Patient getPatientData()
 
     do
     {
-        printf("Enter Contact Number: ");
+        printf("Contact Number: ");
         scanf("%s", patient.contactNumber);
         if (!isValidContactNumber(patient.contactNumber))
         {
@@ -126,115 +113,44 @@ Patient getPatientData()
 
     do
     {
-        printf("Enter Email: ");
+        printf("Email: ");
         scanf("%s", patient.email);
         if (!isValidEmail(patient.email))
         {
-            printf("Invalid email format. Please enter a valid email address.\n");
+            printf("Invalid email format. Please enter a valid email city.\n");
         }
     } while (!isValidEmail(patient.email));
 
-    printf("Enter Address: ");
-    scanf("%[^\n]%*c", patient.address);
+    printf("City: ");
+    scanf("%s", patient.city);
 
     return patient;
 }
 
-int generatePatientId()
+// Function to add a new patient
+void addPatient(Patient newPatient)
 {
-    int maxId = 0;
-    // Find the maximum patientId in the existing patients
-    for (int i = 0; i < numPatients; ++i)
+    Patient patients[MAX_PATIENTS];
+
+    int patientCount = readPatientsFromFile(patients);
+
+    if (patientCount >= MAX_PATIENTS)
     {
-        if (patients[i].patientId > maxId)
-        {
-            maxId = patients[i].patientId;
-        }
+        printf("Maximum patient limit reached. Cannot add more patients.\n");
+        return;
     }
 
-    // Return the next unique patientId (maxId + 1)
-    return maxId + 1;
-}
+    newPatient.patientId = patientCount + 1;
+    patients[patientCount] = newPatient;
+    patientCount++;
 
-int addPatientToFile(Patient patient)
-{
-    FILE *patientsFile = fopen(PATIENTS_FILE_PATH, "a");
-    if (patientsFile == NULL)
+    if (savePatientsToFile(patients, patientCount) == 0)
     {
-        fprintf(stderr, "Error opening file: %s\n", PATIENTS_FILE_PATH);
-        return -1;
-    }
-
-    fprintf(patientsFile, "%d,%d,%s,%s,%s,%s,%s,%s,%s\n",
-            patient.patientId,
-            patient.userId,
-            patient.firstName,
-            patient.lastName,
-            patient.dateOfBirth,
-            patient.gender,
-            patient.contactNumber,
-            patient.email,
-            patient.address);
-
-    fclose(patientsFile);
-    return 0;
-}
-
-int updatePatientFile()
-{
-    FILE *patientsFile = fopen(PATIENTS_FILE_PATH, "w");
-    if (patientsFile == NULL)
-    {
-        fprintf(stderr, "Error opening file: %s\n", PATIENTS_FILE_PATH);
-        return -1;
-    }
-
-    for (int i = 0; i < numPatients; i++)
-    {
-        fprintf(patientsFile, "%d,%d,%s,%s,%s,%s,%s,%s,%s\n",
-                patients[i].patientId,
-                patients[i].userId,
-                patients[i].firstName,
-                patients[i].lastName,
-                patients[i].dateOfBirth,
-                patients[i].gender,
-                patients[i].contactNumber,
-                patients[i].email,
-                patients[i].address);
-    }
-
-    fclose(patientsFile);
-    return 0;
-}
-
-Patient *getPatientById(const int id)
-{
-    for (int i = 0; i < numPatients; ++i)
-    {
-        if (patients[i].patientId == id)
-        {
-            return &patients[i];
-        }
-        printf("Patient ID: %d\n", patients[i].patientId);
-    }
-    return NULL;
-}
-
-void patientLogin(const char *username, const char *password)
-{
-    int userId = authenticateUser(username, password, "patient");
-    if (userId != -1)
-    {
-        printf("Patient logged in successfully with ID: %d\n", userId);
-        // Additional admin-specific logic here
+        printf("Failed to add patient.\n");
+        return;
     }
     else
     {
-        printf("Invalid username, password\n");
+        printf("Patient added successfully.\n");
     }
-}
-
-int main()
-{
-    patientLogin("patientbob", "patientpass");
 }
