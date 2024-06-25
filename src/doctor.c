@@ -70,32 +70,35 @@ Doctor *searchDoctorById(int doctorId)
 }
 
 // Function to get new doctor data from user input
-Doctor getDoctorData()
+void getDoctorData(Doctor *doctor, User *user)
 {
-    Doctor doctor;
-
-    doctor.userId = generateUserId();
+    user->userId = generateUserId();
+    doctor->userId = user->userId;
+    strcpy(user->role, "doctor");
 
     printf("First Name: ");
-    scanf("%s", doctor.firstName);
+    scanf("%s", doctor->firstName);
 
     printf("Last Name: ");
-    scanf("%s", doctor.lastName);
+    scanf("%s", doctor->lastName);
 
     printf("Specialization: ");
-    scanf("%s", doctor.specialization);
+    scanf("%s", doctor->specialization);
 
     printf("Contact Number: ");
-    scanf("%s", doctor.contactNumber);
+    scanf("%s", doctor->contactNumber);
 
     printf("Email: ");
-    scanf("%s", doctor.email);
+    scanf("%s", doctor->email);
 
-    return doctor;
+    // Ask for login information
+    printf("\nPlease enter login information:\n");
+    getUserCredentials(user);
+
 }
 
 // Function to add a new doctor
-void addDoctor(Doctor newDoctor)
+void addDoctor(Doctor *newDoctor)
 {
     Doctor doctors[MAX_DOCTORS];
     int doctorCount = readDoctorsFromFile(doctors);
@@ -106,8 +109,8 @@ void addDoctor(Doctor newDoctor)
         return;
     }
 
-    newDoctor.doctorId = doctorCount + 1;
-    doctors[doctorCount] = newDoctor;
+    newDoctor->doctorId = doctorCount + 1;
+    doctors[doctorCount] = *newDoctor;
     doctorCount++;
 
     if (saveDoctorsToFile(doctors, doctorCount) == 0)

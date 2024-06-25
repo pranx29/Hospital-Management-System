@@ -70,65 +70,70 @@ Patient *searchPatientById(int patientId)
     return NULL; // Return NULL if patient with given ID is not found
 }
 
-Patient getPatientData()
+void getPatientData(Patient *patient, User *user)
 {
-    Patient patient;
-    patient.userId = generateUserId();
+
+    user->userId = generateUserId();
+    ;
+    patient->userId = user->userId;
+    strcpy(user->role, "patient");
 
     printf("First Name: ");
-    scanf("%s", patient.firstName);
+    scanf("%s", patient->firstName);
 
     printf("Last Name: ");
-    scanf("%s", patient.lastName);
+    scanf("%s", patient->lastName);
 
     do
     {
         printf("Date of Birth (YYYY-MM-DD): ");
-        scanf("%s", patient.dateOfBirth);
-        if (!isValidDate(patient.dateOfBirth))
+        scanf("%s", patient->dateOfBirth);
+        if (!isValidDate(patient->dateOfBirth))
         {
             printf("Invalid date format. Please enter in YYYY-MM-DD format.\n");
         }
-    } while (!isValidDate(patient.dateOfBirth));
+    } while (!isValidDate(patient->dateOfBirth));
 
     do
     {
         printf("Gender (Male/Female/Other): ");
-        scanf("%s", patient.gender);
-        if (!isValidGender(patient.gender))
+        scanf("%s", patient->gender);
+        if (!isValidGender(patient->gender))
         {
             printf("Invalid gender. Please enter 'Male', 'Female', or 'Other'.\n");
         }
-    } while (!isValidGender(patient.gender));
+    } while (!isValidGender(patient->gender));
 
     do
     {
         printf("Contact Number: ");
-        scanf("%s", patient.contactNumber);
-        if (!isValidContactNumber(patient.contactNumber))
+        scanf("%s", patient->contactNumber);
+        if (!isValidContactNumber(patient->contactNumber))
         {
             printf("Invalid contact number. Please enter only digits and ensure it is not empty.\n");
         }
-    } while (!isValidContactNumber(patient.contactNumber));
+    } while (!isValidContactNumber(patient->contactNumber));
 
     do
     {
         printf("Email: ");
-        scanf("%s", patient.email);
-        if (!isValidEmail(patient.email))
+        scanf("%s", patient->email);
+        if (!isValidEmail(patient->email))
         {
             printf("Invalid email format. Please enter a valid email city.\n");
         }
-    } while (!isValidEmail(patient.email));
+    } while (!isValidEmail(patient->email));
 
     printf("City: ");
-    scanf("%s", patient.city);
+    scanf("%s", patient->city);
 
-    return patient;
+    // Ask for login information
+    printf("\nPlease enter login information:\n");
+    getUserCredentials(user);
 }
 
 // Function to add a new patient
-void addPatient(Patient newPatient)
+void addPatient(Patient *newPatient)
 {
     Patient patients[MAX_PATIENTS];
 
@@ -140,8 +145,8 @@ void addPatient(Patient newPatient)
         return;
     }
 
-    newPatient.patientId = patientCount + 1;
-    patients[patientCount] = newPatient;
+    newPatient->patientId = patientCount + 1;
+    patients[patientCount] = *newPatient;
     patientCount++;
 
     if (savePatientsToFile(patients, patientCount) == 0)

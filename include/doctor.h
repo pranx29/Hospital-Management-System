@@ -22,7 +22,7 @@ typedef struct
 int readDoctorsFromFile(Doctor doctors[]);
 int saveDoctorsToFile(Doctor doctors[], int doctorCount);
 Doctor *searchDoctorById(int doctorId);
-Doctor getDoctorData();
-void addDoctor(Doctor newDoctor);
+void getDoctorData(Doctor *doctor, User *user);
+void addDoctor(Doctor *newDoctor);
 
 #endif /* DOCTOR_H */

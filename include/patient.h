@@ -24,6 +24,6 @@ typedef struct
 int readPatientsFromFile(Patient patients[]);
 int savePatientsToFile(Patient patients[], int patientCount);
 Patient *searchPatientById(int patientId);
-Patient getPatientData();
-void addPatient(Patient newPatient);
+void getPatientData(Patient *patient, User *user);
+void addPatient(Patient *newPatient);
 #endif // PATIENT_H

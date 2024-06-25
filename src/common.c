@@ -44,3 +44,22 @@ int isValidEmail(const char *email)
         return 0;
     return 1;
 }
+
+int isValidUsername(const char *username)
+{
+    int len = strlen(username);
+    if (len < MIN_USERNAME_LENGTH || len > MAX_USERNAME_LENGTH)
+        return 0;
+    for (int i = 0; i < len; ++i)
+    {
+        if (!isalnum(username[i]) && username[i] != '_')
+            return 0;
+    }
+    return 1;
+}
+
+int isValidPassword(const char *password)
+{
+    int len = strlen(password);
+    return len >= MIN_PASSWORD_LENGTH && len <= MAX_PASSWORD_LENGTH;
+}

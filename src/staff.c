@@ -60,32 +60,35 @@ Staff *searchStaffById(int staffId) {
 }
 
 // Function to get new staff data from user input
-Staff getStaffData() {
-    Staff staff;
+void getStaffData(Staff *staff, User *user) {
+
+    user->userId = generateUserId(); 
+    staff->userId = user->userId;
+    strcpy(user->role, "staff");
 
     printf("First Name: ");
-    scanf("%s", staff.firstName);
-
+    scanf("%s", staff->firstName);
+    
     printf("Last Name: ");
-    scanf("%s", staff.lastName);
-
+    scanf("%s", staff->lastName);
+    
     printf("Role: ");
-    scanf("%s", staff.role);
-
+    scanf("%s", staff->role);
+    
     printf("Contact Number: ");
-    scanf("%s", staff.contactNumber);
-
+    scanf("%s", staff->contactNumber);
+    
     printf("Email: ");
-    scanf("%s", staff.email);
+    scanf("%s", staff->email);
 
-    // Assuming user ID is generated or assigned elsewhere in the system
-    staff.userId = 0; // Initialize or generate user ID as needed
+    // Ask for login information
+    printf("\nPlease enter login information:\n");
+    getUserCredentials(user);
 
-    return staff;
 }
 
 // Function to add new staff
-void addStaff(Staff newStaff) {
+void addStaff(Staff *newStaff) {
     Staff staff[MAX_STAFF];
     int staffCount = readStaffFromFile(staff);
 
@@ -94,8 +97,8 @@ void addStaff(Staff newStaff) {
         return;
     }
 
-    newStaff.staffId = staffCount + 1;
-    staff[staffCount] = newStaff;
+    newStaff->staffId = staffCount + 1;
+    staff[staffCount] = *newStaff;
     staffCount++;
 
     if (saveStaffToFile(staff, staffCount) == 0) {
@@ -105,5 +108,3 @@ void addStaff(Staff newStaff) {
         printf("Staff added successfully.\n");
     }
 }
-
-

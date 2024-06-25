@@ -21,7 +21,7 @@ typedef struct {
 int readStaffFromFile(Staff staff[]);
 int saveStaffToFile(Staff staff[], int staffCount);
 Staff *searchStaffById(int staffId);
-Staff getStaffData();
-void addStaff(Staff newStaff);
+void getStaffData(Staff *staff, User *user);
+void addStaff(Staff *newStaff);
 
 #endif /* STAFF_H */

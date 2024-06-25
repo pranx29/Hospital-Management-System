@@ -2,6 +2,7 @@
 #define COMMON_H
 
 #include <stdio.h>
+#include "user.h"
 
 #define MAX_NAME_LENGTH 50
 #define MAX_CONTACT_LENGTH 10
@@ -13,6 +14,7 @@ int isValidDate(const char *date);
 int isValidGender(const char *gender);
 int isValidContactNumber(const char *contactNumber);
 int isValidEmail(const char *email);
-void removeNewline(char *str);
+int isValidUsername(const char *username);
+int isValidPassword(const char *password);
 
 #endif // COMMON_H
