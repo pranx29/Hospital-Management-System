@@ -51,7 +51,7 @@ int saveUsersToFile(User users[], int userCount)
 }
 
 // Function to add user
-void addUser(User *newUser)
+int addUser(User *newUser)
 {
     User users[MAX_USERS];
     int userCount = readUsersFromFile(users);
@@ -59,7 +59,7 @@ void addUser(User *newUser)
     if (userCount >= MAX_USERS)
     {
         printf("Maximum user limit reached. Cannot add more users.\n");
-        return;
+        return 0;
     }
 
     newUser->userId = userCount + 1;
@@ -68,12 +68,12 @@ void addUser(User *newUser)
 
     if (saveUsersToFile(users, userCount) == 0)
     {
-        printf("Failed to add user.\n");
-        return;
+        printf("Error saving user to file.\n");
+        return 0;
     }
     else
     {
-        printf("User added successfully.\n");
+        return 1;
     }
 }
 
@@ -151,4 +151,3 @@ void getUserCredentials(User *user)
         }
     } while (strcmp(user->password, confirmPassword) != 0);
 }
-

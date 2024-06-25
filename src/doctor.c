@@ -15,7 +15,7 @@ int readDoctorsFromFile(Doctor doctors[])
 
     int doctorCount = 0;
     while (fscanf(file, "%d,%d,%[^,],%[^,],%[^,],%[^,],%[^\n]\n",
-                  &doctors[doctorCount].doctorId, &doctors[doctorCount].userId,
+                  &doctors[doctorCount].doctorId, &doctors[doctorCount].user.userId,
                   doctors[doctorCount].firstName, doctors[doctorCount].lastName,
                   doctors[doctorCount].specialization, doctors[doctorCount].contactNumber,
                   doctors[doctorCount].email) == 7)
@@ -44,7 +44,7 @@ int saveDoctorsToFile(Doctor doctors[], int doctorCount)
 
     for (int i = 0; i < doctorCount; i++)
     {
-        fprintf(file, "%d,%d,%s,%s,%s,%s,%s\n", doctors[i].doctorId, doctors[i].userId,
+        fprintf(file, "%d,%d,%s,%s,%s,%s,%s\n", doctors[i].doctorId, doctors[i].user.userId,
                 doctors[i].firstName, doctors[i].lastName, doctors[i].specialization,
                 doctors[i].contactNumber, doctors[i].email);
     }
@@ -70,35 +70,23 @@ Doctor *searchDoctorById(int doctorId)
 }
 
 // Function to get new doctor data from user input
-void getDoctorData(Doctor *doctor, User *user)
+void getDoctorData(Doctor *doctor)
 {
-    user->userId = generateUserId();
-    doctor->userId = user->userId;
-    strcpy(user->role, "doctor");
-
-    printf("First Name: ");
-    scanf("%s", doctor->firstName);
-
-    printf("Last Name: ");
-    scanf("%s", doctor->lastName);
-
-    printf("Specialization: ");
-    scanf("%s", doctor->specialization);
-
-    printf("Contact Number: ");
-    scanf("%s", doctor->contactNumber);
-
-    printf("Email: ");
-    scanf("%s", doctor->email);
+    doctor->user.userId = generateUserId();
+    strcpy(doctor->user.role, "doctor");
+    strcpy(doctor->firstName, getText("First Name", MAX_NAME_LENGTH));
+    strcpy(doctor->lastName, getText("Last Name", MAX_NAME_LENGTH));
+    strcpy(doctor->specialization, getText("Specialization", MAX_SPECIALIZATION_LENGTH));
+    strcpy(doctor->contactNumber, getContactNumber());
+    strcpy(doctor->email, getEmail());
 
     // Ask for login information
     printf("\nPlease enter login information:\n");
-    getUserCredentials(user);
-
+    getUserCredentials(&doctor->user);
 }
 
 // Function to add a new doctor
-void addDoctor(Doctor *newDoctor)
+int addDoctor(Doctor *newDoctor)
 {
     Doctor doctors[MAX_DOCTORS];
     int doctorCount = readDoctorsFromFile(doctors);
@@ -106,20 +94,20 @@ void addDoctor(Doctor *newDoctor)
     if (doctorCount >= MAX_DOCTORS)
     {
         printf("Maximum doctor limit reached. Cannot add more doctors.\n");
-        return;
+        return 0;
     }
 
     newDoctor->doctorId = doctorCount + 1;
     doctors[doctorCount] = *newDoctor;
     doctorCount++;
 
-    if (saveDoctorsToFile(doctors, doctorCount) == 0)
+    if (saveDoctorsToFile(doctors, doctorCount) == 0 || addUser(&newDoctor->user) == 0)
     {
-        printf("Failed to add doctor.\n");
-        return;
+        printf("Error saving doctor to file.\n");
+        return 0;
     }
     else
     {
-        printf("Doctor added successfully.\n");
+        return 1;
     }
 }

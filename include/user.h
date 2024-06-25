@@ -22,7 +22,7 @@ typedef struct
 // Function declarations
 int readUsersFromFile(User users[]);
 int saveUsersToFile(User users[], int userCount);
-void addUser(User *newUser);
+int addUser(User *newUser);
 User *getUserByUsername(const char *username);
 int isUsernameExists(const char *username);
 int authenticateUser(const char *username, const char *password, const char *role);

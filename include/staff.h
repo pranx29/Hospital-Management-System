@@ -9,7 +9,7 @@
 
 typedef struct {
     int staffId;
-    int userId;
+    User user;
     char firstName[MAX_NAME_LENGTH];
     char lastName[MAX_NAME_LENGTH];
     char role[MAX_ROLE_LENGTH];
@@ -21,7 +21,7 @@ typedef struct {
 int readStaffFromFile(Staff staff[]);
 int saveStaffToFile(Staff staff[], int staffCount);
 Staff *searchStaffById(int staffId);
-void getStaffData(Staff *staff, User *user);
-void addStaff(Staff *newStaff);
+void getStaffData(Staff *staff);
+int addStaff(Staff *newStaff);
 
 #endif /* STAFF_H */

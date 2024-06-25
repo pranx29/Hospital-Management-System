@@ -11,7 +11,7 @@
 typedef struct
 {
     int doctorId;
-    int userId;
+    User user;
     char firstName[MAX_NAME_LENGTH];
     char lastName[MAX_NAME_LENGTH];
     char specialization[MAX_SPECIALIZATION_LENGTH];
@@ -22,7 +22,7 @@ typedef struct
 int readDoctorsFromFile(Doctor doctors[]);
 int saveDoctorsToFile(Doctor doctors[], int doctorCount);
 Doctor *searchDoctorById(int doctorId);
-void getDoctorData(Doctor *doctor, User *user);
-void addDoctor(Doctor *newDoctor);
+void getDoctorData(Doctor *doctor);
+int addDoctor(Doctor *newDoctor);
 
 #endif /* DOCTOR_H */

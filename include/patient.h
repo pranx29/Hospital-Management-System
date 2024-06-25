@@ -10,7 +10,7 @@
 typedef struct
 {
     int patientId;
-    int userId;
+    User user;
     char firstName[MAX_NAME_LENGTH];
     char lastName[MAX_NAME_LENGTH];
     char dateOfBirth[12];
@@ -24,6 +24,6 @@ typedef struct
 int readPatientsFromFile(Patient patients[]);
 int savePatientsToFile(Patient patients[], int patientCount);
 Patient *searchPatientById(int patientId);
-void getPatientData(Patient *patient, User *user);
-void addPatient(Patient *newPatient);
+void getPatientData(Patient *patient);
+int addPatient(Patient *newPatient);
 #endif // PATIENT_H

@@ -15,7 +15,7 @@ int readPatientsFromFile(Patient patients[])
 
     int patientCount = 0;
     while (fscanf(file, "%d,%d,%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^\n]\n",
-                  &patients[patientCount].patientId, &patients[patientCount].userId,
+                  &patients[patientCount].patientId, &patients[patientCount].user.userId,
                   patients[patientCount].firstName, patients[patientCount].lastName,
                   patients[patientCount].dateOfBirth, patients[patientCount].gender,
                   patients[patientCount].contactNumber, patients[patientCount].email,
@@ -45,7 +45,7 @@ int savePatientsToFile(Patient patients[], int patientCount)
 
     for (int i = 0; i < patientCount; i++)
     {
-        fprintf(file, "%d,%d,%s,%s,%s,%s,%s,%s,%s\n", patients[i].patientId, patients[i].userId,
+        fprintf(file, "%d,%d,%s,%s,%s,%s,%s,%s,%s\n", patients[i].patientId, patients[i].user.userId,
                 patients[i].firstName, patients[i].lastName, patients[i].dateOfBirth,
                 patients[i].gender, patients[i].contactNumber, patients[i].email,
                 patients[i].city);
@@ -70,70 +70,26 @@ Patient *searchPatientById(int patientId)
     return NULL; // Return NULL if patient with given ID is not found
 }
 
-void getPatientData(Patient *patient, User *user)
+void getPatientData(Patient *patient)
 {
+    patient->user.userId = generateUserId();
+    strcpy(patient->user.role, "patient");
 
-    user->userId = generateUserId();
-    ;
-    patient->userId = user->userId;
-    strcpy(user->role, "patient");
-
-    printf("First Name: ");
-    scanf("%s", patient->firstName);
-
-    printf("Last Name: ");
-    scanf("%s", patient->lastName);
-
-    do
-    {
-        printf("Date of Birth (YYYY-MM-DD): ");
-        scanf("%s", patient->dateOfBirth);
-        if (!isValidDate(patient->dateOfBirth))
-        {
-            printf("Invalid date format. Please enter in YYYY-MM-DD format.\n");
-        }
-    } while (!isValidDate(patient->dateOfBirth));
-
-    do
-    {
-        printf("Gender (Male/Female/Other): ");
-        scanf("%s", patient->gender);
-        if (!isValidGender(patient->gender))
-        {
-            printf("Invalid gender. Please enter 'Male', 'Female', or 'Other'.\n");
-        }
-    } while (!isValidGender(patient->gender));
-
-    do
-    {
-        printf("Contact Number: ");
-        scanf("%s", patient->contactNumber);
-        if (!isValidContactNumber(patient->contactNumber))
-        {
-            printf("Invalid contact number. Please enter only digits and ensure it is not empty.\n");
-        }
-    } while (!isValidContactNumber(patient->contactNumber));
-
-    do
-    {
-        printf("Email: ");
-        scanf("%s", patient->email);
-        if (!isValidEmail(patient->email))
-        {
-            printf("Invalid email format. Please enter a valid email city.\n");
-        }
-    } while (!isValidEmail(patient->email));
-
-    printf("City: ");
-    scanf("%s", patient->city);
+    strcpy(patient->firstName, getText("First Name", MAX_NAME_LENGTH));
+    strcpy(patient->lastName, getText("Last Name", MAX_NAME_LENGTH));
+    strcpy(patient->dateOfBirth, getDate());
+    strcpy(patient->gender, getGender());
+    strcpy(patient->contactNumber, getContactNumber());
+    strcpy(patient->email, getEmail());
+    strcpy(patient->city, getText("City", MAX_CITY_LENGTH));
 
     // Ask for login information
     printf("\nPlease enter login information:\n");
-    getUserCredentials(user);
+    getUserCredentials(&patient->user);
 }
 
 // Function to add a new patient
-void addPatient(Patient *newPatient)
+int addPatient(Patient *newPatient)
 {
     Patient patients[MAX_PATIENTS];
 
@@ -142,20 +98,20 @@ void addPatient(Patient *newPatient)
     if (patientCount >= MAX_PATIENTS)
     {
         printf("Maximum patient limit reached. Cannot add more patients.\n");
-        return;
+        return 0;
     }
 
     newPatient->patientId = patientCount + 1;
     patients[patientCount] = *newPatient;
     patientCount++;
 
-    if (savePatientsToFile(patients, patientCount) == 0)
+    if (savePatientsToFile(patients, patientCount) == 0 || addUser(&newPatient->user) == 0)
     {
-        printf("Failed to add patient.\n");
-        return;
+        printf("Error saving patient to file.\n");
+        return 0;
     }
     else
     {
-        printf("Patient added successfully.\n");
+        return 1;
     }
 }
