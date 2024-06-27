@@ -13,7 +13,7 @@ typedef struct
     User user;
     char firstName[MAX_NAME_LENGTH];
     char lastName[MAX_NAME_LENGTH];
-    char dateOfBirth[12];
+    char dateOfBirth[MAX_DATE_LENGTH];
     char gender[10];
     char contactNumber[MAX_CONTACT_LENGTH];
     char email[MAX_EMAIL_LENGTH];

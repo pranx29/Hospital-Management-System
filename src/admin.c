@@ -30,7 +30,7 @@ void adminMenu()
             registerStaff();
             break;
         case 4:
-            printf("Viewing appointment trends...\n");
+            viewAppointmentTrends();    
             break;
         case 5:
             printf("Managing inventory...\n");
@@ -94,4 +94,71 @@ void registerStaff()
     {
         printf("Failed to register staff. Please try again.\n");
     }
+}
+
+// Function to view appointment trends
+void viewAppointmentTrends()
+{
+    printf("\n------------- Appointment Trends -------------\n");
+    Appointment appointments[MAX_APPOINTMENTS];
+    int appointmentCount = readAppointmentsFromFile(appointments);
+
+    printf("Total Appointments: %d\n\n", appointmentCount);
+
+    // Initialize counters for statuses and types
+    int scheduledAppointments = 0;
+    int cancelledAppointments = 0;
+    int checkupAppointments = 0;
+    int consultationAppointments = 0;
+    int procedureAppointments = 0;
+    int followupAppointments = 0;
+
+
+    for (int i = 0; i < appointmentCount; i++) {
+        switch (appointments[i].status) {
+            case SCHEDULED:
+                scheduledAppointments++;
+                break;
+            case CANCELLED:
+                cancelledAppointments++;
+                break;
+            default:
+                // Handle unexpected status
+                break;
+        }
+
+        switch (appointments[i].appointmentType) {
+            case CHECKUP:
+                checkupAppointments++;
+                break;
+            case CONSULTATION:
+                consultationAppointments++;
+                break;
+            case PROCEDURE:
+                procedureAppointments++;
+                break;
+            case FOLLOWUP:
+                followupAppointments++;
+                break;
+            default:
+                // Handle unexpected appointment type
+                break;
+        }
+    }
+
+    printf("Appointments by Status:\n");
+    printf("Scheduled: %d\n", scheduledAppointments);
+    printf("Cancelled: %d\n\n", cancelledAppointments);
+
+    printf("Appointments by Type:\n");
+    printf("Checkup: %d\n", checkupAppointments);
+    printf("Consultation: %d\n", consultationAppointments);
+    printf("Procedure: %d\n", procedureAppointments);
+    printf("Follow-up: %d\n", followupAppointments);
+}
+
+int main()
+{
+    adminMenu();
+    return 0;
 }

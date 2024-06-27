@@ -7,10 +7,12 @@
 #include "patient.h"
 #include "doctor.h"
 #include "staff.h"
+#include "appointment.h"
 
 void adminMenu();
 void registerPatient();
 void registerDoctor();
 void registerStaff();
+void viewAppointmentTrends();
 
 #endif

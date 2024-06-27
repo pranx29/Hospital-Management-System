@@ -8,6 +8,7 @@
 #define MAX_CONTACT_LENGTH 10
 #define MAX_EMAIL_LENGTH 50
 #define MAX_CITY_LENGTH 50
+#define MAX_DATE_LENGTH 12
 
 // Validation function declarations
 int isValidText(const char *name, int maxTextLength);
