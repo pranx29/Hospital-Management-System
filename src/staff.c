@@ -54,19 +54,41 @@ int saveStaffToFile(Staff staff[], int staffCount)
 }
 
 // Function to search for staff by ID
-Staff *searchStaffById(int staffId)
+void searchStaffById(int staffId, Staff *staff)
 {
-    static Staff staff[MAX_STAFF]; // Static array to hold staff data
-    int staffCount = readStaffFromFile(staff);
+    Staff staffs[MAX_STAFF];
+    int staffCount = readStaffFromFile(staffs);
 
     for (int i = 0; i < staffCount; i++)
     {
-        if (staff[i].staffId == staffId)
+        if (staffs[i].staffId == staffId)
         {
-            return &staff[i];
+            *staff = staffs[i];
+            return;
         }
     }
-    return NULL; // Return NULL if staff with given ID is not found
+    printf("Staff not found.\n");
+}
+
+int getValidStaffId(const char *type)
+{
+    int staffId;
+    int isValid = 0;
+    Staff staff;
+
+    do
+    {
+        printf("Staff ID (%s): ", type);
+        scanf("%d", &staffId);
+        searchStaffById(staffId, &staff);
+
+        if (staff.staffId == staffId)
+        {
+            isValid = 1;
+        }
+
+    } while (!isValid);
+    return staffId;
 }
 
 // Function to get new staff data from user input

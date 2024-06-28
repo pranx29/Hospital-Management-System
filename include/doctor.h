@@ -3,7 +3,7 @@
 
 #define MAX_SPECIALIZATION_LENGTH 50
 #define MAX_DOCTORS 100
-#define DOCTORS_FILE_PATH "../data/doctors.csv"
+#define DOCTORS_FILE_PATH "data/doctors.csv"
 
 #include "common.h"
 #include "user.h"
@@ -21,7 +21,8 @@ typedef struct
 
 int readDoctorsFromFile(Doctor doctors[]);
 int saveDoctorsToFile(Doctor doctors[], int doctorCount);
-Doctor *searchDoctorById(int doctorId);
+void searchDoctorById(int doctorId, Doctor *doctor);
+int getValidDoctorId();
 void getDoctorData(Doctor *doctor);
 int addDoctor(Doctor *newDoctor);
 

@@ -2,7 +2,7 @@
 #define PATIENT_H
 
 #define MAX_PATIENTS 100
-#define PATIENTS_FILE_PATH "../data/patients.csv"
+#define PATIENTS_FILE_PATH "data/patients.csv"
 
 #include "user.h"
 #include "common.h"
@@ -23,7 +23,16 @@ typedef struct
 // Function declaration
 int readPatientsFromFile(Patient patients[]);
 int savePatientsToFile(Patient patients[], int patientCount);
-Patient *searchPatientById(int patientId);
+void searchPatientById(int patientId, Patient *patient);
+int getValidPatientId();
 void getPatientData(Patient *patient);
 int addPatient(Patient *newPatient);
+void manageAppointments();
+void viewAppointments();
+void displayScheduledAppointments();
+int getValidAppointmentId(int patientId);
+void rescheduleAppointment();
+void cancelAppointment();
+
+
 #endif // PATIENT_H

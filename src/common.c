@@ -225,3 +225,68 @@ int getUserChoice(int min, int max)
     }
     return choice;
 }
+
+// Function to get a valid positive number from user input
+int getNumber(const char *input)
+{
+    int number;
+    int isValid = 0;
+    do
+    {
+        printf("%s: ", input);
+        if (scanf("%d", &number) != 1)
+        {
+            printf("Invalid %s.\n", input);
+            while (getchar() != '\n')
+                ; // Clear input buffer
+        }
+        else if (number < 0)
+        {
+            printf("Invalid %s. \n", input);
+        }
+        else
+        {
+            isValid = 1;
+        }
+    } while (!isValid);
+    return number;
+}
+
+// Function to valid time in HH:MM format
+int isValidTime(const char *time)
+{
+    if (strlen(time) != 5)
+        return 0;
+
+    if (time[2] != ':')
+        return 0;
+
+    int hour = (time[0] - '0') * 10 + (time[1] - '0');
+    int minute = (time[3] - '0') * 10 + (time[4] - '0');
+
+    if (hour < 0 || hour > 23 || minute < 0 || minute > 59)
+        return 0;
+
+    return 1;
+}
+
+// Function to get time in HH:MM format
+char *getTime()
+{
+    static char time[6]; // Static array to hold the time
+    int valid = 0;
+    do
+    {
+        printf("Time (HH:MM): ");
+        scanf("%s", time);
+        if (!isValidTime(time))
+        {
+            printf("Invalid time format. Please enter in HH:MM format.\n");
+        }
+        else
+        {
+            valid = 1;
+        }
+    } while (!valid);
+    return time;
+}

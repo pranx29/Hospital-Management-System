@@ -92,48 +92,79 @@ int saveAppointmentsToFile(Appointment appointments[], int appointmentCount)
 }
 
 // Function to search for appointment by ID
-Appointment *searchAppointmentById(int appointmentId)
+void searchAppointmentById(int appointmentId, Appointment *appointment)
 {
-    static Appointment appointments[MAX_APPOINTMENTS]; // Static array to hold appointment data
+    Appointment appointments[MAX_APPOINTMENTS];
     int appointmentCount = readAppointmentsFromFile(appointments);
 
     for (int i = 0; i < appointmentCount; i++)
     {
         if (appointments[i].appointmentId == appointmentId)
         {
-            return &appointments[i];
+            *appointment = appointments[i];
+            return;
         }
     }
-    return NULL; // Return NULL if appointment with given ID is not found
+    printf("Appointment with ID %d not found.\n", appointmentId);
+}
+
+// Function to search for appointments by patient ID
+void searchAppointmentsByPatientId(int patientId, Appointment *appointments, int *count)
+{
+    Appointment allAppointments[MAX_APPOINTMENTS];
+    int appointmentCount = readAppointmentsFromFile(allAppointments);
+    int index = 0;
+
+    for (int i = 0; i < appointmentCount; i++)
+    {
+        if (allAppointments[i].patient.patientId == patientId)
+        {
+            appointments[index] = allAppointments[i];
+            index++;
+        }
+    }
+
+    *count = index;
+
+    if (index == 0)
+    {
+        printf("No appointments found for patient with ID %d.\n", patientId);
+    }
+}
+
+// Function to get appointment type from user input
+enum AppointmentType getAppointmentType()
+{
+    int appointmentType;
+    printf("Enter Appointment Type (0 for Checkup, 1 for Consultation, 2 for Procedure, 3 for Follow-up): ");
+    scanf("%d", &appointmentType);
+
+    while (appointmentType < 0 || appointmentType > 3)
+    {
+        printf("Invalid appointment type. Please enter a valid appointment type: ");
+        scanf("%d", &appointmentType);
+    }
+
+    return (enum AppointmentType)appointmentType;
 }
 
 // Function to get new appointment data from user input
 void getAppointmentData(Appointment *appointment)
 {
-    // Get patient, doctor, and nurse data
-    printf("Enter Patient Details:\n");
-    printf("Patient ID: ");
-    scanf("%d", &appointment->patient.patientId);
+    appointment->patient.patientId = getValidPatientId();
 
-    printf("Enter Doctor Details:\n");
-    printf("Doctor ID: ");
-    scanf("%d", &appointment->doctor.doctorId);
+    appointment->doctor.doctorId = getValidDoctorId();
 
-    printf("Enter Nurse Details:\n");
-    printf("Nurse ID: ");
-    scanf("%d", &appointment->nurse.staffId);
+    appointment->nurse.staffId = getValidStaffId("Nurse");
 
     printf("Enter Appointment Details:\n");
-    printf("Appointment Type: ");
 
-    printf("Appointment Date (YYYY-MM-DD): ");
-    scanf(" %s", appointment->appointmentDate);
-    printf("Appointment Time (HH:MM): ");
-    scanf(" %s", appointment->appointmentTime);
-    printf("Status: ");
+    appointment->appointmentType = getAppointmentType();
+    strcpy(appointment->appointmentDate, getDate());
 
-    printf("Comments: ");
-    scanf(" %s", appointment->comments);
+    strcpy(appointment->appointmentTime, getTime());
+
+    strcpy(appointment->comments, getText("Comments", MAX_COMMENTS_LENGTH));
 }
 
 // Function to add a new appointment

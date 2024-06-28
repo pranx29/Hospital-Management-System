@@ -2,6 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../include/patient.h"
+#include "../include/appointment.h"
+
+int patientId = 1;
+
+// Below are the functions defined for patient management in patient.h
 
 // Function to read patients from file to array
 int readPatientsFromFile(Patient patients[])
@@ -55,21 +60,44 @@ int savePatientsToFile(Patient patients[], int patientCount)
     return 1;
 }
 // Function to search patient by ID
-Patient *searchPatientById(int patientId)
+void searchPatientById(int patientId, Patient *patient)
 {
-    static Patient patients[MAX_PATIENTS];
+    Patient patients[MAX_PATIENTS];
     int patientCount = readPatientsFromFile(patients);
 
     for (int i = 0; i < patientCount; i++)
     {
         if (patients[i].patientId == patientId)
         {
-            return &patients[i];
+            *patient = patients[i];
+            return;
         }
     }
-    return NULL; // Return NULL if patient with given ID is not found
+    printf("Patient with ID %d not found.\n", patientId);
+}
+// Function to get a valid id patient id from user it should check patient file
+int getValidPatientId()
+{
+    int patientId;
+    int isValid = 0;
+    Patient patient;
+
+    do
+    {
+        printf("Patient ID: ");
+        scanf("%d", &patientId);
+        searchPatientById(patientId, &patient);
+
+        if (patient.patientId == patientId)
+        {
+            isValid = 1;
+        }
+
+    } while (!isValid);
+    return patientId;
 }
 
+// Function to get patient data
 void getPatientData(Patient *patient)
 {
     patient->user.userId = generateUserId();
@@ -114,4 +142,164 @@ int addPatient(Patient *newPatient)
     {
         return 1;
     }
+}
+
+// Below are the functions used only by patient
+
+// Patient Appointment Management:
+// Function to show patient appointment management menu
+void manageAppointments()
+{
+    int choice;
+    do
+    {
+        printf("\n---------------- Manage Inventory ---------------\n");
+        printf("1. View Appointments\n");
+        printf("2. Reschedule Appointments\n");
+        printf("3. Cancel Appointments\n");
+        printf("4. Go back\n");
+
+        choice = getUserChoice(1, 4);
+
+        switch (choice)
+        {
+        case 1:
+            viewAppointments();
+            break;
+        case 2:
+            rescheduleAppointment();
+            break;
+        case 3:
+            cancelAppointment();
+            break;
+        case 4:
+            return;
+        }
+    } while (1);
+}
+
+// Function to view appointments of patient
+void viewAppointments()
+{
+    Appointment appointments[MAX_APPOINTMENTS];
+    int appointmentCount;
+    searchAppointmentsByPatientId(patientId, appointments, &appointmentCount);
+
+    printf("\n---------------- Appointments ---------------\n");
+
+    if (appointmentCount == 0)
+    {
+        printf("No appointments found.\n");
+        return;
+    }
+
+    printf("Appointment ID\tDoctor Name\tDate\t\tTime\tStatus\n");
+    for (int i = 0; i < appointmentCount; i++)
+    {
+        searchDoctorById(appointments[i].doctor.doctorId, &appointments[i].doctor);
+
+        printf("%d\t%s %s\t%s\t%s\t%s\n", appointments[i].appointmentId,
+               appointments[i].doctor.firstName, appointments[i].doctor.lastName,
+               appointments[i].appointmentDate, appointments[i].appointmentTime,
+               statusToString(appointments[i].status));
+    }
+}
+
+// Function to display scheduled appointments
+void displayScheduledAppointments()
+{
+
+    Appointment appointments[MAX_APPOINTMENTS];
+    int appointmentCount;
+    searchAppointmentsByPatientId(patientId, appointments, &appointmentCount);
+
+     if (appointmentCount == 0)
+    {
+        printf("No appointments found.\n");
+        return;
+    }
+
+    printf("Current Appointment Details:\n");
+    printf("\nID\tDate\t\tTime\tType\n");
+
+    for (int i = 0; i < appointmentCount; i++)
+    {
+        if (appointments[i].patient.patientId == patientId && appointments[i].status == SCHEDULED)
+        {
+            printf("%d\t%s\t%s\t%s\n", appointments[i].appointmentId, appointments[i].appointmentDate,
+                   appointments[i].appointmentTime, appointmentTypeToString(appointments[i].appointmentType));
+        }
+    }
+}
+
+// Function to get valid appointment ID from patient
+int getValidAppointmentId(int patientId)
+{
+    Appointment appointments[MAX_APPOINTMENTS];
+    int appointmentCount;
+    searchAppointmentsByPatientId(patientId, appointments, &appointmentCount);
+
+    int appointmentId;
+    do
+    {
+        printf("Enter Appointment ID: ");
+        scanf("%d", &appointmentId);
+
+        for (int i = 0; i < appointmentCount; i++)
+        {
+            if (appointments[i].appointmentId == appointmentId && appointments[i].patient.patientId == patientId && appointments[i].status == SCHEDULED)
+            {
+                return appointmentId;
+            }
+        }
+        printf("Invalid Appointment ID. Please try again.\n");
+    } while (1);
+}
+
+// Function to reschedule appointment
+void rescheduleAppointment()
+{
+    Appointment appointments[MAX_APPOINTMENTS];
+    int appointmentCount = readAppointmentsFromFile(appointments);
+    displayScheduledAppointments();
+
+    int appointmentId = getValidAppointmentId(patientId);
+
+    // Change appointment date and time
+    for (int i = 0; i < appointmentCount; i++)
+    {
+        if (appointments[i].appointmentId == appointmentId)
+        {
+            printf("Enter new date (YYYY-MM-DD): ");
+            scanf("%s", appointments[i].appointmentDate);
+            printf("Enter new time (HH:MM): ");
+            scanf("%s", appointments[i].appointmentTime);
+            printf("Appointment rescheduled successfully.\n");
+            break;
+        }
+    }
+    saveAppointmentsToFile(appointments, appointmentCount);
+}
+
+// Function to cancel appointment
+void cancelAppointment()
+{
+    Appointment appointments[MAX_APPOINTMENTS];
+    int appointmentCount = readAppointmentsFromFile(appointments);
+
+    displayScheduledAppointments();
+
+    int appointmentId = getValidAppointmentId(patientId);
+
+    // Change appointment status to cancelled
+    for (int i = 0; i < appointmentCount; i++)
+    {
+        if (appointments[i].appointmentId == appointmentId)
+        {
+            appointments[i].status = CANCELLED;
+            printf("Appointment cancelled successfully.\n");
+            break;
+        }
+    }
+    saveAppointmentsToFile(appointments, appointmentCount);
 }

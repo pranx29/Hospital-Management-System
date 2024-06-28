@@ -2,7 +2,7 @@
 #define STAFF_H
 
 #define MAX_STAFF 100  // Define your maximum staff limit as needed
-#define STAFF_FILE_PATH "../data/staffs.csv"  // Define your staff data file path
+#define STAFF_FILE_PATH "data/staffs.csv"  // Define your staff data file path
 
 #include "common.h"
 #include "user.h"
@@ -20,7 +20,8 @@ typedef struct {
 // Function prototypes
 int readStaffFromFile(Staff staff[]);
 int saveStaffToFile(Staff staff[], int staffCount);
-Staff *searchStaffById(int staffId);
+void searchStaffById(int staffId, Staff *staff);
+int getValidStaffId(const char *type);
 void getStaffData(Staff *staff);
 int addStaff(Staff *newStaff);
 

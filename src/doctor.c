@@ -54,19 +54,40 @@ int saveDoctorsToFile(Doctor doctors[], int doctorCount)
 }
 
 // Function to search for a doctor by ID
-Doctor *searchDoctorById(int doctorId)
+void searchDoctorById(int doctorId, Doctor *doctor)
 {
-    static Doctor doctors[MAX_DOCTORS]; // Static array to hold doctors data
+    Doctor doctors[MAX_DOCTORS];
     int doctorCount = readDoctorsFromFile(doctors);
 
     for (int i = 0; i < doctorCount; i++)
     {
         if (doctors[i].doctorId == doctorId)
         {
-            return &doctors[i];
+            *doctor = doctors[i];
+            return;
         }
     }
-    return NULL; // Return NULL if doctor with given ID is not found
+    printf("Doctor with ID %d not found.\n", doctorId);
+}
+int getValidDoctorId()
+{
+    int doctorId;
+    int isValid = 0;
+    Doctor doctor;
+
+    do
+    {
+        printf("Doctor ID: ");
+        scanf("%d", &doctorId);
+        searchDoctorById(doctorId, &doctor);
+
+        if (doctor.doctorId == doctorId)
+        {
+            isValid = 1;
+        }
+
+    } while (!isValid);
+    return doctorId;
 }
 
 // Function to get new doctor data from user input
