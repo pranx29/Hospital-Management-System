@@ -69,6 +69,7 @@ void searchDoctorById(int doctorId, Doctor *doctor)
     }
     printf("Doctor with ID %d not found.\n", doctorId);
 }
+
 int getValidDoctorId()
 {
     int doctorId;

@@ -20,19 +20,11 @@ typedef struct
     char city[MAX_CITY_LENGTH];
 } Patient;
 
-// Function declaration
 int readPatientsFromFile(Patient patients[]);
 int savePatientsToFile(Patient patients[], int patientCount);
 void searchPatientById(int patientId, Patient *patient);
 int getValidPatientId();
 void getPatientData(Patient *patient);
 int addPatient(Patient *newPatient);
-void manageAppointments();
-void viewAppointments();
-void displayScheduledAppointments();
-int getValidAppointmentId(int patientId);
-void rescheduleAppointment();
-void cancelAppointment();
 
-
-#endif // PATIENT_H
+#endif 

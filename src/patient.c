@@ -3,6 +3,7 @@
 #include <string.h>
 #include "../include/patient.h"
 #include "../include/appointment.h"
+#include "../include/ehr.h"
 
 int patientId = 1;
 
@@ -145,38 +146,7 @@ int addPatient(Patient *newPatient)
 }
 
 // Below are the functions used only by patient
-
 // Patient Appointment Management:
-// Function to show patient appointment management menu
-void manageAppointments()
-{
-    int choice;
-    do
-    {
-        printf("\n---------------- Manage Inventory ---------------\n");
-        printf("1. View Appointments\n");
-        printf("2. Reschedule Appointments\n");
-        printf("3. Cancel Appointments\n");
-        printf("4. Go back\n");
-
-        choice = getUserChoice(1, 4);
-
-        switch (choice)
-        {
-        case 1:
-            viewAppointments();
-            break;
-        case 2:
-            rescheduleAppointment();
-            break;
-        case 3:
-            cancelAppointment();
-            break;
-        case 4:
-            return;
-        }
-    } while (1);
-}
 
 // Function to view appointments of patient
 void viewAppointments()
@@ -302,4 +272,67 @@ void cancelAppointment()
         }
     }
     saveAppointmentsToFile(appointments, appointmentCount);
+}
+
+// Function to view EHR records of patient
+void viewEHR()
+{
+    EHR ehrs[MAX_EHRS];
+    int ehrCount = readEHRsFromFile(ehrs);
+
+    printf("\n---------------- Health Records ---------------\n");
+
+    if (ehrCount == 0)
+    {
+        printf("No EHR records found.\n");
+        return;
+    }
+
+    printf("Record ID\tDoctor Name\tDate\t\tDiagnosis\tTreatment\n");
+    for (int i = 0; i < ehrCount; i++)
+    {
+        if (ehrs[i].patient.patientId == patientId)
+        {
+            searchDoctorById(ehrs[i].doctor.doctorId, &ehrs[i].doctor);
+            printf("%d\t\t%s %s\t%s\t%s\t%s\n", ehrs[i].recordId,
+                   ehrs[i].doctor.firstName, ehrs[i].doctor.lastName,
+                   ehrs[i].visitDate, ehrs[i].diagnosis, ehrs[i].treatment);
+        }
+    }
+}
+
+// Function to patient main menu
+void patientMenu()
+{
+    int choice;
+    do
+    {
+        printf("\n---------------- Patient Menu ---------------\n");
+        printf("1. View Appointments\n");
+        printf("2. Reschedule Appointments\n");
+        printf("3. Cancel Appointments\n");
+        printf("4. View Health Records\n");
+        printf("5. Logout\n");
+
+        choice = getUserChoice(1, 5);
+
+        switch (choice)
+        {
+        case 1:
+            viewAppointments();
+            break;
+        case 2:
+            rescheduleAppointment();
+            break;
+        case 3:
+            cancelAppointment();
+            break;
+        case 4:
+            viewEHR();
+            break;
+        case 5:
+            printf("Logging out...\n");
+            return;
+        }
+    } while (1);
 }
