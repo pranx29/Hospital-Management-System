@@ -51,7 +51,7 @@ int saveEHRsToFile(EHR ehrs[], int ehrCount)
 }
 
 // Function to search for EHR records by patient ID
-void searchEHRByPatientId(int patient_id)
+void searchEHRByPatientId(int patient_id, EHR *ehr)
 {
     EHR ehrs[MAX_EHRS];
     int ehrCount = readEHRsFromFile(ehrs);
@@ -60,11 +60,11 @@ void searchEHRByPatientId(int patient_id)
     {
         if (ehrs[i].patient.patientId == patient_id)
         {
-            printf("Record ID: %d\nPatient ID: %d\nDoctor ID: %d\nDate: %s\nDiagnosis: %s\nTreatment: %s\n\n",
-                   ehrs[i].recordId, ehrs[i].patient.patientId, ehrs[i].doctor.doctorId,
-                   ehrs[i].visitDate, ehrs[i].diagnosis, ehrs[i].treatment);
+            ehr = &ehrs[i];
+            return;
         }
     }
+    printf("No EHR record found for patient ID: %d\n", patient_id);
 }
 
 // Function to search for EHR records by doctor ID
@@ -84,19 +84,24 @@ void searchEHRByDoctorId(int doctor_id)
     }
 }
 
+// Function to get EHR data
+void getEHRData(EHR *ehr, int doctorId)
+{
+    ehr->patient.patientId = getValidPatientId();
+    ehr->doctor.doctorId = doctorId;
+    strcpy(ehr->visitDate, getCurrentDate());
+    strcpy(ehr->diagnosis, getText("Diagnosis", MAX_DIAGNOSIS_LENGTH));
+    strcpy(ehr->treatment, getText("Treatment", MAX_TREATMENT_LENGTH));
+}
+
 // Function to add a new EHR record
-void addEHRRecord(EHR new_record)
+void addEHR(EHR newRecord)
 {
     EHR ehrs[MAX_EHRS];
     int ehrCount = readEHRsFromFile(ehrs);
 
-    if (ehrCount >= MAX_EHRS)
-    {
-        printf("Cannot add new EHR record. Maximum limit reached.\n");
-        return;
-    }
-
-    ehrs[ehrCount] = new_record;
+    newRecord.recordId = ehrCount + 1;
+    ehrs[ehrCount] = newRecord;
     ehrCount++;
 
     if (saveEHRsToFile(ehrs, ehrCount))
@@ -105,6 +110,6 @@ void addEHRRecord(EHR new_record)
     }
     else
     {
-        printf("Failed to add EHR record.\n");
+        printf("Error saving EHR record.\n");
     }
 }

@@ -23,8 +23,9 @@ int isValidEmail(const char *email);
 char *getEmail();
 int isValidUsername(const char *username);
 int isValidPassword(const char *password);
+char *getPassword();
 int getUserChoice(int min, int max);
 int getNumber(const char *input);
 char *getTime();
-
+char *getCurrentDate();
 #endif // COMMON_H

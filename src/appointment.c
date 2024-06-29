@@ -132,6 +132,30 @@ void searchAppointmentsByPatientId(int patientId, Appointment *appointments, int
     }
 }
 
+// Function to search appointments by doctor ID
+void searchAppointmentsByDoctorId(int doctorId, Appointment *appointments, int *count)
+{
+    Appointment allAppointments[MAX_APPOINTMENTS];
+    int appointmentCount = readAppointmentsFromFile(allAppointments);
+    int index = 0;
+
+    for (int i = 0; i < appointmentCount; i++)
+    {
+        if (allAppointments[i].doctor.doctorId == doctorId)
+        {
+            appointments[index] = allAppointments[i];
+            index++;
+        }
+    }
+
+    *count = index;
+
+    if (index == 0)
+    {
+        printf("No appointments found for doctor with ID %d.\n", doctorId);
+    }
+}
+
 // Function to get appointment type from user input
 enum AppointmentType getAppointmentType()
 {

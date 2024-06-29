@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../include/doctor.h"
+#include "../include/appointment.h"
+#include "../include/ehr.h"
+
+// Below are the functions defined for doctor management in doctor.h
 
 // Function to read doctors from file to array
 int readDoctorsFromFile(Doctor doctors[])
@@ -70,6 +74,7 @@ void searchDoctorById(int doctorId, Doctor *doctor)
     printf("Doctor with ID %d not found.\n", doctorId);
 }
 
+// Function to get a valid doctor ID from user input
 int getValidDoctorId()
 {
     int doctorId;
@@ -132,4 +137,125 @@ int addDoctor(Doctor *newDoctor)
     {
         return 1;
     }
+}
+
+// Function to get doctor data by userid
+void getDoctorByUserId(int userId, Doctor *doctor)
+{
+    Doctor doctors[MAX_DOCTORS];
+    int doctorCount = readDoctorsFromFile(doctors);
+
+    for (int i = 0; i < doctorCount; i++)
+    {
+        if (doctors[i].user.userId == userId)
+        {
+            *doctor = doctors[i];
+            return;
+        }
+    }
+    printf("Doctor with user ID %d not found.\n", userId);
+}
+
+// Below are the functions defined for doctor operations in doctor.c
+
+// Function to view appointments of a doctor
+void viewAppointmentsOfDoctor(int doctorId)
+{
+    Appointment appointments[MAX_APPOINTMENTS];
+    int appointmentCount;
+    searchAppointmentsByDoctorId(doctorId, appointments, &appointmentCount);
+
+    printf("\n---------------- Appointments ---------------\n");
+
+    if (appointmentCount == 0)
+    {
+        printf("No appointments found for doctor with ID %d.\n", doctorId);
+        return;
+    }
+
+    printf("Appointment ID\tPatient Name\tAppointment Date\tAppointment Time\tStatus\n");
+    for (int i = 0; i < appointmentCount; i++)
+    {
+        searchPatientById(appointments[i].patient.patientId, &appointments[i].patient);
+        printf("%d\t\t%s %s\t%s\t\t%s\t\t\t%s\n", appointments[i].appointmentId,
+               appointments[i].patient.firstName, appointments[i].patient.lastName,
+               appointments[i].appointmentDate, appointments[i].appointmentTime,
+               statusToString(appointments[i].status));
+    }
+}
+
+// Function to view EHR of a patient for a doctor
+void viewDoctorEHR(int doctorId)
+{
+    int patientId = getValidPatientId();
+
+    EHR ehrs[MAX_EHRS];
+    int ehrCount = readEHRsFromFile(ehrs);
+
+    printf("\n---------------- Health Records ---------------\n");
+
+    if (ehrCount == 0)
+    {
+        printf("No EHR records found.\n");
+        return;
+    }
+
+    printf("Record ID\\tVisit Date\t\tDiagnosis\tTreatment\n");
+    for (int i = 0; i < ehrCount; i++)
+    {
+        if (ehrs[i].patient.patientId == patientId && ehrs[i].doctor.doctorId == doctorId)
+        {
+            printf("%d\t\t%s\t%s\t%s\n", ehrs[i].recordId, ehrs[i].visitDate, ehrs[i].diagnosis, ehrs[i].treatment);
+        }
+    }
+}
+
+// Function to add EHR record for a patient
+void addEHRRecord(int doctorId)
+{
+    EHR ehr;
+    getEHRData(&ehr, doctorId);
+    addEHR(ehr);
+}
+
+// Function to display doctor main menu: Check appointments, view EHR of a patient, add ehr
+void doctorMenu(int UserId)
+{
+    Doctor doctor;
+    getDoctorByUserId(UserId, &doctor);
+    if (doctor.doctorId == -1)
+    {
+        printf("Error logging in to your account.\n");
+        return;
+    }
+
+    int choice;
+    do
+    {
+        printf("\n---------------- Doctor Menu ---------------\n");
+        printf("Welcome Dr. %s %s\n", doctor.firstName, doctor.lastName);
+        printf("1. View Appointments\n");
+        printf("2. View EHR\n");
+        printf("3. Add EHR\n");
+        printf("4. Logout\n");
+        printf("Enter your choice: ");
+
+        choice = getUserChoice(1, 4);
+
+        switch (choice)
+        {
+        case 1:
+            viewAppointmentsOfDoctor(doctor.doctorId);
+            break;
+        case 2:
+            viewDoctorEHR(doctor.doctorId);
+            break;
+        case 3:
+            addEHRRecord(doctor.doctorId);
+            break;
+        case 4:
+            printf("Logging out...\n");
+            break;
+        }
+    } while (1);
 }

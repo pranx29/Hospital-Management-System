@@ -23,9 +23,9 @@ typedef struct
 
 // Function prototypes for EHR operations
 int readEHRsFromFile(EHR ehrs[]);
-int saveEHRsToFile(EHR ehrs[], int ehrCount);
-void searchEHRByPatientId(int patient_id);
-void searchEHRByDoctorId(int doctor_id);
-void addEHRRecord(EHR new_record);
+int saveEHRsToFile(EHR ehrs[], int ehrCount);;
+void searchEHRByPatientId(int patient_id, EHR *ehr);
+void getEHRData(EHR *ehr, int doctorId);
+void addEHR(EHR newRecord);
 
 #endif // EHR_H

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 #include "../include/common.h"
 
 int isValidText(const char *text, int maxTextLength)
@@ -212,6 +213,27 @@ int isValidPassword(const char *password)
     return len >= MIN_PASSWORD_LENGTH && len <= MAX_PASSWORD_LENGTH;
 }
 
+// Function to get a valid password from user input
+char *getPassword()
+{
+    static char password[MAX_PASSWORD_LENGTH + 1]; // Static array to hold the password
+    int valid = 0;
+    do
+    {
+        printf("Password: ");
+        scanf("%s", password);
+        if (!isValidPassword(password))
+        {
+            printf("Invalid password. Password must be between %d and %d characters.\n", MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH);
+        }
+        else
+        {
+            valid = 1;
+        }
+    } while (!valid);
+    return password;
+}
+
 int getUserChoice(int min, int max)
 {
     int choice;
@@ -289,4 +311,14 @@ char *getTime()
         }
     } while (!valid);
     return time;
+}
+
+// Function to get current data in YYYY-MM-DD format
+char *getCurrentDate()
+{
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    static char date[11];
+    sprintf(date, "%d-%02d-%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
+    return date;
 }

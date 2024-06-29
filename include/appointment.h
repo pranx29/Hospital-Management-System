@@ -50,6 +50,7 @@ int readAppointmentsFromFile(Appointment appointments[]);
 int saveAppointmentsToFile(Appointment appointments[], int appointmentCount);
 void searchAppointmentById(int appointmentId, Appointment *appointment);
 void searchAppointmentsByPatientId(int patientId, Appointment *appointments, int *count);
+void searchAppointmentsByDoctorId(int doctorId, Appointment *appointments, int *count);
 void getAppointmentData(Appointment *appointment);
 int addAppointment(Appointment *newAppointment);
 
