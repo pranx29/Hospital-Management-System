@@ -2,46 +2,6 @@
 #include <stdlib.h>
 #include "../include/admin.h"
 
-// Function to display the admin menu
-void adminMenu()
-{
-    int choice;
-    do
-    {
-        printf("\n---------------- Admin Panel ---------------\n");
-        printf("1. Register Patient\n");
-        printf("2. Register Doctor\n");
-        printf("3. Register Staff\n");
-        printf("4. View appointment trends\n");
-        printf("5. Manage inventory\n");
-        printf("6. Logout\n");
-
-        choice = getUserChoice(1, 6);
-
-        switch (choice)
-        {
-        case 1:
-            registerPatient();
-            break;
-        case 2:
-            registerDoctor();
-            break;
-        case 3:
-            registerStaff();
-            break;
-        case 4:
-            viewAppointmentTrends();
-            break;
-        case 5:
-            manageInventory();
-            break;
-        case 6:
-            printf("Logging out...\n");
-            return;
-        }
-    } while (1);
-}
-
 void registerPatient()
 {
     Patient patient;
@@ -156,33 +116,6 @@ void viewAppointmentTrends()
     printf("Follow-up: %d\n", followupAppointments);
 }
 
-// Function to display options in manage inventory
-void manageInventory()
-{
-    int choice;
-    do
-    {
-        printf("\n---------------- Manage Inventory ---------------\n");
-        printf("1. View Inventory\n");
-        printf("2. Search Inventory\n");
-        printf("3. Go back\n");
-
-        choice = getUserChoice(1, 3);
-
-        switch (choice)
-        {
-        case 1:
-            viewInventory();
-            break;
-        case 2:
-            searchInventory();
-            break;
-        case 3:
-            return;
-        }
-    } while (1);
-}
-
 // Function to view inventory
 void viewInventory()
 {
@@ -235,4 +168,72 @@ void searchInventory()
         printf("Do you want to search for another item? (y/n): ");
         scanf(" %c", &choice);
     } while (choice == 'y' || choice == 'Y');
+}
+
+
+// Function to display options in manage inventory
+void manageInventory()
+{
+    int choice;
+    do
+    {
+        printf("\n---------------- Manage Inventory ---------------\n");
+        printf("1. View Inventory\n");
+        printf("2. Search Inventory\n");
+        printf("3. Go back\n");
+
+        choice = getUserChoice(1, 3);
+
+        switch (choice)
+        {
+        case 1:
+            viewInventory();
+            break;
+        case 2:
+            searchInventory();
+            break;
+        case 3:
+            return;
+        }
+    } while (1);
+}
+
+// Function to display the admin menu
+void adminMenu()
+{
+    int choice;
+    do
+    {
+        printf("\n---------------- Admin Panel ---------------\n");
+        printf("1. Register Patient\n");
+        printf("2. Register Doctor\n");
+        printf("3. Register Staff\n");
+        printf("4. View appointment trends\n");
+        printf("5. Manage inventory\n");
+        printf("6. Logout\n");
+
+        choice = getUserChoice(1, 6);
+
+        switch (choice)
+        {
+        case 1:
+            registerPatient();
+            break;
+        case 2:
+            registerDoctor();
+            break;
+        case 3:
+            registerStaff();
+            break;
+        case 4:
+            viewAppointmentTrends();
+            break;
+        case 5:
+            manageInventory();
+            break;
+        case 6:
+            printf("Logging out...\n");
+            return;
+        }
+    } while (1);
 }
