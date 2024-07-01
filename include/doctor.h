@@ -25,5 +25,6 @@ void searchDoctorById(int doctorId, Doctor *doctor);
 int getValidDoctorId();
 void getDoctorData(Doctor *doctor);
 int addDoctor(Doctor *newDoctor);
-
+void viewAppointmentsByDoctorID(int doctorId);
+void doctorMenu(int userId);
 #endif /* DOCTOR_H */

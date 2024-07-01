@@ -36,5 +36,7 @@ InventoryItem *searchItemById(int itemId);
 void getItemData(InventoryItem *item);
 int addItem(InventoryItem *newItem);
 const char *getCategoryName(enum ItemCategory category);
-
+void viewInventory();
+void searchInventory();
+void updateInventory();
 #endif /* INVENTORY_H */

@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../include/staff.h"
+#include "../include/appointment.h"
+#include "../include/inventory.h"
 
 // Function to read staff from file to array
 int readStaffFromFile(Staff staff[])
@@ -61,7 +63,24 @@ void searchStaffById(int staffId, Staff *staff)
 
     for (int i = 0; i < staffCount; i++)
     {
+        printf("%d\n", staffs[i].staffId);
         if (staffs[i].staffId == staffId)
+        {
+            *staff = staffs[i];
+            return;
+        }
+    }
+    printf("Staff not found.\n");
+}
+
+void getStaffByUserId(int userId, Staff *staff)
+{
+    Staff staffs[MAX_STAFF];
+    int staffCount = readStaffFromFile(staffs);
+
+    for (int i = 0; i < staffCount; i++)
+    {
+        if (staffs[i].user.userId == userId)
         {
             *staff = staffs[i];
             return;
@@ -132,5 +151,240 @@ int addStaff(Staff *newStaff)
     else
     {
         return 1;
+    }
+}
+
+// Create staff main menu: Create appoinment, view appoinment, update appoinment, view inventory, update inventory supplies make all staff don't have access to every menu:
+
+void createAppointment()
+{
+    printf("Appointment Details:\n");
+    Appointment appointment;
+
+    getAppointmentData(&appointment);
+
+    if (addAppointment(&appointment) == 1)
+    {
+        printf("Appointment added successfully.\n");
+    }
+    else
+    {
+        printf("Error adding appointment.\n");
+    }
+}
+
+void viewAppointmentsByStaffId(int staffId)
+{
+    Appointment appointments[MAX_APPOINTMENTS];
+    int appointmentCount = readAppointmentsFromFile(appointments);
+
+    if (appointmentCount == 0)
+    {
+        printf("No appointments found.\n");
+        return;
+    }
+
+    printf("\nID\tDate\t\tTime\tType\n");
+    for (int i = 0; i < appointmentCount; i++)
+    {
+        if (appointments[i].nurse.staffId == staffId && appointments[i].status == SCHEDULED)
+        {
+            printf("%d\t%s\t%s\t%s\n", appointments[i].appointmentId, appointments[i].appointmentDate,
+                   appointments[i].appointmentTime, appointmentTypeToString(appointments[i].appointmentType));
+        }
+    }
+}
+
+void viewAppointments(int staffId)
+{
+    Appointment appointments[MAX_APPOINTMENTS];
+    int appointmentCount = readAppointmentsFromFile(appointments);
+
+    if (appointmentCount == 0)
+    {
+        printf("No appointments found.\n");
+        return;
+    }
+
+    // Ask for filter
+    int choice;
+    printf("Filter appointments by:\n");
+    printf("1. Patient ID\n");
+    printf("2. Doctor ID\n");
+    printf("3. Nurse ID\n");
+
+    printf("Enter your choice: ");
+    choice = getUserChoice(1, 3);
+
+    if (choice == 1)
+    {
+        int patientId = getValidPatientId();
+        viewAppointmentsByPatientID(patientId);
+    }
+    else if (choice == 2)
+    {
+        int doctorId = getValidDoctorId();
+        viewAppointmentsByDoctorID(doctorId);
+    }
+    else if (choice == 3)
+    {
+        viewAppointmentsByStaffId(staffId);
+    }
+}
+
+void updateAppointment()
+{
+    Appointment appointments[MAX_APPOINTMENTS];
+    int appointmentCount = readAppointmentsFromFile(appointments);
+
+    if (appointmentCount == 0)
+    {
+        printf("No appointments found.\n");
+        return;
+    }
+
+    int appointmentId = getValidAppointmentId();
+    Appointment appointment;
+    searchAppointmentById(appointmentId, &appointment);
+
+    printf("Current Appointment Details:\n");
+    printf("\nID\tDate\t\tTime\tType\n");
+    printf("%d\t%s\t%s\t%s\n", appointment.appointmentId, appointment.appointmentDate,
+           appointment.appointmentTime, appointmentTypeToString(appointment.appointmentType));
+
+    printf("Update Appointment:\n");
+
+    // Change appointment date and time
+    for (int i = 0; i < appointmentCount; i++)
+    {
+        if (appointments[i].appointmentId == appointmentId)
+        {
+            strcpy(appointments[i].appointmentDate, getDate("Appointment Date (YYYY-MM-DD)"));
+            strcpy(appointments[i].appointmentTime, getTime());
+            appointments[i].status = getNumber("Status (0: Scheduled, 1: Cancelled):");
+            printf("Appointment rescheduled successfully.\n");
+            break;
+        }
+    }
+    if (saveAppointmentsToFile(appointments, appointmentCount))
+    {
+        printf("Appointment updated successfully.\n");
+    }
+    else
+    {
+        printf("Error updating appointment.\n");
+    }
+}
+
+void receptionistMenu(int staffId)
+{
+    int choice;
+    do
+    {
+        printf("\n------------- Receptionist Main Menu -------------\n");
+        printf("1. Create Appointment\n");
+        printf("2. View Appointment\n");
+        printf("3. Update Appointment\n");
+        printf("4. Logout\n");
+        printf("Enter your choice: ");
+        choice = getUserChoice(1, 4);
+
+        switch (choice)
+        {
+        case 1:
+            createAppointment();
+            break;
+        case 2:
+            viewAppointments(staffId);
+            break;
+        case 3:
+            updateAppointment();
+            break;
+        case 4:
+            printf("Logging out...\n");
+            return;
+        }
+
+    } while (1);
+}
+
+void nurseMenu(int staffId)
+{
+    int choice;
+    do
+    {
+        printf("\n------------- Nurse Main Menu -------------\n");
+        printf("1. View Appointment\n");
+        printf("2. Update Appointment\n");
+        printf("3. Logout\n");
+        printf("Enter your choice: ");
+        choice = getUserChoice(1, 3);
+
+        switch (choice)
+        {
+        case 1:
+            viewAppointmentsByStaffId(staffId);
+            break;
+        case 2:
+            updateAppointment();
+            break;
+        case 3:
+            printf("Logging out...\n");
+            return;
+        }
+
+    } while (1);
+}
+
+void managerMenu()
+{
+    int choice;
+    do
+    {
+        printf("\n------------- Manager Main Menu -------------\n");
+        printf("1. View Inventory\n");
+        printf("2. Search Inventory\n");
+        printf("3. Update Inventory Supplies\n");
+        printf("4. Logout\n");
+        printf("Enter your choice: ");
+        choice = getUserChoice(1, 3);
+
+        switch (choice)
+        {
+        case 1:
+            viewInventory();
+            break;
+        case 2:
+            searchInventory();
+            break;
+        case 3:
+            updateInventory();
+            break;
+        case 4:
+            printf("Logging out...\n");
+            return;
+        }
+
+    } while (1);
+}
+
+void staffMenu(int userId)
+{
+    Staff staff;
+    getStaffByUserId(userId, &staff);
+
+    printf("Welcome %s %s\n", staff.firstName, staff.lastName);
+
+    if (strcmp(staff.role, "receptionist") == 0)
+    {
+        receptionistMenu(staff.staffId);
+    }
+    else if (strcmp(staff.role, "nurse") == 0)
+    {
+        nurseMenu(staff.staffId);
+    }
+    else if (strcmp(staff.role, "manager") == 0)
+    {
+        managerMenu();
     }
 }

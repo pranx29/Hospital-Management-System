@@ -14,7 +14,7 @@
 int isValidText(const char *name, int maxTextLength);
 char *getText(const char *type, int maxTextLength);
 int isValidDate(const char *date);
-char *getDate();
+char *getDate(const char *text);
 int isValidGender(const char *gender);
 char *getGender();
 int isValidContactNumber(const char *contactNumber);

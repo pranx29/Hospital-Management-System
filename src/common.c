@@ -37,13 +37,13 @@ char *getText(const char *type, int maxTextLength)
     return text;
 }
 
-char *getDate()
+char *getDate(const char *text)
 {
     static char date[11]; // Static array to hold the date
     int valid = 0;
     do
     {
-        printf("Date of Birth (YYYY-MM-DD): ");
+        printf("%s: ", text);
         scanf("%s", date);
         if (!isValidDate(date))
         {

@@ -27,6 +27,6 @@ int getValidPatientId();
 void getPatientData(Patient *patient);
 int addPatient(Patient *newPatient);
 void patientMenu(const int userId);
-extern void viewAppointments(int patientId);
+void viewAppointmentsByPatientID(const int patientId);
 
 #endif

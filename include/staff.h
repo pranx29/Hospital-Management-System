@@ -24,5 +24,6 @@ void searchStaffById(int staffId, Staff *staff);
 int getValidStaffId(const char *type);
 void getStaffData(Staff *staff);
 int addStaff(Staff *newStaff);
+void staffMenu(int staffId);
 
 #endif /* STAFF_H */

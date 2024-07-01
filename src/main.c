@@ -6,6 +6,7 @@
 #include "../include/user.h"
 #include "../include/admin.h"
 #include "../include/patient.h"
+#include "../include/doctor.h"
 
 // Function to verify login
 int verifyLogin(char *username, char *password, User *user)
@@ -58,11 +59,11 @@ void loginMenu()
             }
             else if (strcmp(user.role, "doctor") == 0)
             {
-                printf("Doctor\n");
+                doctorMenu(userId);
             }
-            else if (strcmp(user.role, "staff") == 0)
+            else if (strcmp(user.role, "manager") == 0 || strcmp(user.role, "nurse") == 0 || strcmp(user.role, "receptionist") == 0)
             {
-                printf("Staff\n");
+                staffMenu(userId);
             }
             else if (strcmp(user.role, "patient") == 0)
             {
@@ -78,7 +79,7 @@ void loginMenu()
 }
 
 // Function to display main menu of hospital management system. It shows login and exit
-/*int main()
+int main()
 {
     int choice;
     do
@@ -101,4 +102,4 @@ void loginMenu()
     } while (1);
 
     return 0;
-}*/
+}

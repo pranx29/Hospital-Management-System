@@ -159,7 +159,7 @@ void getDoctorByUserId(int userId, Doctor *doctor)
 // Below are the functions defined for doctor operations in doctor.c
 
 // Function to view appointments of a doctor
-void viewAppointmentsOfDoctor(int doctorId)
+void viewAppointmentsByDoctorID(int doctorId)
 {
     Appointment appointments[MAX_APPOINTMENTS];
     int appointmentCount;
@@ -219,10 +219,10 @@ void addEHRRecord(int doctorId)
 }
 
 // Function to display doctor main menu: Check appointments, view EHR of a patient, add ehr
-void doctorMenu(int UserId)
+void doctorMenu(int userId)
 {
     Doctor doctor;
-    getDoctorByUserId(UserId, &doctor);
+    getDoctorByUserId(userId, &doctor);
     if (doctor.doctorId == -1)
     {
         printf("Error logging in to your account.\n");
@@ -245,7 +245,7 @@ void doctorMenu(int UserId)
         switch (choice)
         {
         case 1:
-            viewAppointmentsOfDoctor(doctor.doctorId);
+            viewAppointmentsByDoctorID(doctor.doctorId);
             break;
         case 2:
             viewDoctorEHR(doctor.doctorId);

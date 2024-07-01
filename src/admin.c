@@ -116,60 +116,6 @@ void viewAppointmentTrends()
     printf("Follow-up: %d\n", followupAppointments);
 }
 
-// Function to view inventory
-void viewInventory()
-{
-    InventoryItem inventoryItems[MAX_ITEMS];
-    int inventoryItemCount = readInventoryFromFile(inventoryItems);
-
-    printf("\n---------------- Inventory ---------------\n");
-    printf("Total Items: %d\n\n", inventoryItemCount);
-
-    if (inventoryItemCount == 0)
-    {
-        printf("No items in inventory.\n");
-        return;
-    }
-
-    printf("ID\tCategory\tDescription\tManufacturer\tQuantity\tReorder Level\tExpiry Date\n");
-    for (int i = 0; i < inventoryItemCount; i++)
-    {
-        printf("%d\t%s\t%s\t%s\t%d\t%d\t%s\n", inventoryItems[i].itemId, getCategoryName(inventoryItems[i].category), inventoryItems[i].description, inventoryItems[i].manufacturer, inventoryItems[i].quantity, inventoryItems[i].reorderLevel, inventoryItems[i].expiryDate);
-    }
-}
-void searchInventory()
-{
-    printf("\n---------------- Search Inventory ---------------\n");
-
-    int itemId;
-
-    char choice;
-    do
-    {
-        printf("Enter item ID: ");
-        scanf("%d", &itemId);
-        InventoryItem *item = searchItemById(itemId);
-        if (item == NULL)
-        {
-            printf("Item not found in inventory.\n");
-        }
-        else
-        {
-            printf("\n---------------- Item Details ---------------\n");
-            printf("ID: %d\n", item->itemId);
-            printf("Name: %s\n", item->itemName);
-            printf("Category: %s\n", getCategoryName(item->category));
-            printf("Description: %s\n", item->description);
-            printf("Manufacturer: %s\n", item->manufacturer);
-            printf("Quantity: %d\n", item->quantity);
-            printf("Reorder Level: %d\n", item->reorderLevel);
-            printf("Expiry Date: %s\n", item->expiryDate);
-        }
-        printf("Do you want to search for another item? (y/n): ");
-        scanf(" %c", &choice);
-    } while (choice == 'y' || choice == 'Y');
-}
-
 
 // Function to display options in manage inventory
 void manageInventory()

@@ -184,11 +184,32 @@ void getAppointmentData(Appointment *appointment)
     printf("Enter Appointment Details:\n");
 
     appointment->appointmentType = getAppointmentType();
-    strcpy(appointment->appointmentDate, getDate());
+    strcpy(appointment->appointmentDate, getDate("Appointment Date (YYYY-MM-DD)"));
 
     strcpy(appointment->appointmentTime, getTime());
-
+    appointment->status = getNumber("Status (0 for Scheduled, 1 for Cancelled)");
     strcpy(appointment->comments, getText("Comments", MAX_COMMENTS_LENGTH));
+}
+
+int getValidAppointmentId()
+{
+    int appointmentId;
+    int isValid = 0;
+    Appointment appointment;
+
+    do
+    {
+        printf("Appointment ID: ");
+        scanf("%d", &appointmentId);
+        searchAppointmentById(appointmentId, &appointment);
+
+        if (appointment.appointmentId == appointmentId)
+        {
+            isValid = 1;
+        }
+
+    } while (!isValid);
+    return appointmentId;
 }
 
 // Function to add a new appointment
@@ -217,3 +238,6 @@ int addAppointment(Appointment *newAppointment)
         return 1;
     }
 }
+
+// Function to update appointment by id
+

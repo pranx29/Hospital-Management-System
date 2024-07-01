@@ -106,7 +106,7 @@ void getPatientData(Patient *patient)
 
     strcpy(patient->firstName, getText("First Name", MAX_NAME_LENGTH));
     strcpy(patient->lastName, getText("Last Name", MAX_NAME_LENGTH));
-    strcpy(patient->dateOfBirth, getDate());
+    strcpy(patient->dateOfBirth, getDate("Date of Birth (YYYY-MM-DD)"));
     strcpy(patient->gender, getGender());
     strcpy(patient->contactNumber, getContactNumber());
     strcpy(patient->email, getEmail());
@@ -145,8 +145,8 @@ int addPatient(Patient *newPatient)
     }
 }
 
-// Function to get patient id by user id
-int getPatientIdByUserId(int userId)
+// Function to get patient by user id
+void getPatientIdByUserId(int userId, Patient *patient)
 {
     Patient patients[MAX_PATIENTS];
     int patientCount = readPatientsFromFile(patients);
@@ -155,17 +155,17 @@ int getPatientIdByUserId(int userId)
     {
         if (patients[i].user.userId == userId)
         {
-            return patients[i].patientId;
+            *patient = patients[i];
         }
     }
-    return -1;
+    printf("Patient not found.\n");
 }
 
 // Below are the functions defined for patient operations in patient.c
 // Patient Appointment Management:
 
 // Function to view appointments of patient
-void viewAppointments(const int patientId)
+void viewAppointmentsByPatientID(const int patientId)
 {
     Appointment appointments[MAX_APPOINTMENTS];
     int appointmentCount;
@@ -219,7 +219,7 @@ void displayScheduledAppointments(const int patientId)
 }
 
 // Function to get valid appointment ID from patient
-int getValidAppointmentId(int patientId)
+int getAppointmentIdOfPatient(int patientId)
 {
     Appointment appointments[MAX_APPOINTMENTS];
     int appointmentCount;
@@ -249,22 +249,28 @@ void rescheduleAppointment(const int patientId)
     int appointmentCount = readAppointmentsFromFile(appointments);
     displayScheduledAppointments(patientId);
 
-    int appointmentId = getValidAppointmentId(patientId);
+    int appointmentId = getAppointmentIdOfPatient(patientId);
 
     // Change appointment date and time
     for (int i = 0; i < appointmentCount; i++)
     {
         if (appointments[i].appointmentId == appointmentId)
         {
-            printf("Enter new date (YYYY-MM-DD): ");
-            scanf("%s", appointments[i].appointmentDate);
-            printf("Enter new time (HH:MM): ");
-            scanf("%s", appointments[i].appointmentTime);
-            printf("Appointment rescheduled successfully.\n");
+            strcpy(appointments[i].appointmentDate, getDate("Appointment Date (YYYY-MM-DD)"));
+            strcpy(appointments[i].appointmentTime, getTime());
+            appointments[i].status = getNumber("Enter Status (0: Scheduled, 1: Cancelled):");
+
             break;
         }
     }
-    saveAppointmentsToFile(appointments, appointmentCount);
+    if (saveAppointmentsToFile(appointments, appointmentCount))
+    {
+        printf("Appointment rescheduled successfully.\n");
+    }
+    else
+    {
+        printf("Error rescheduling appointment.\n");
+    }
 }
 
 // Function to cancel appointment
@@ -275,7 +281,7 @@ void cancelAppointment(const int patientId)
 
     displayScheduledAppointments(patientId);
 
-    int appointmentId = getValidAppointmentId(patientId);
+    int appointmentId = getAppointmentIdOfPatient(patientId);
 
     // Change appointment status to cancelled
     for (int i = 0; i < appointmentCount; i++)
@@ -320,12 +326,12 @@ void viewEHR(const int patientId)
 // Function to patient main menu
 void patientMenu(const int userId)
 {
-    int patientId = getPatientIdByUserId(userId);
+    Patient patient;
+    getPatientIdByUserId(userId, &patient);
 
-    if (patientId == -1)
+    if (patient.patientId == -1)
     {
         printf("Error logging in to your account.\n");
-        printf("%d %d", userId, patientId);
         return;
     }
 
@@ -344,16 +350,16 @@ void patientMenu(const int userId)
         switch (choice)
         {
         case 1:
-            viewAppointments(patientId);
+            viewAppointmentsByPatientID(patient.patientId);
             break;
         case 2:
-            rescheduleAppointment(patientId);
+            rescheduleAppointment(patient.patientId);
             break;
         case 3:
-            cancelAppointment(patientId);
+            cancelAppointment(patient.patientId);
             break;
         case 4:
-            viewEHR(patientId);
+            viewEHR(patient.patientId);
             break;
         case 5:
             printf("Logging out...\n");

@@ -1,10 +1,10 @@
 1,johndoe,password123,admin
 2,marysmith,securepassword,patient
 3,drsmith,doctorpassword,doctor
-4,nurselucy,nursepass,staff
+4,nurselucy,nursepass,nurse
 5,patientbob,patientpass,patient
-6,annawong,annawongpass,staff
+6,annawong,annawongpass,receptionist
 7,doejohn,doejohnpass,doctor
 8,sarahconnor,sarahpass,patient
 9,robertbrown,robertpass,patient
-10,lisasmith,lisapass,staff
+10,lisasmith,lisapass,manager
