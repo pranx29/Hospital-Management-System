@@ -24,21 +24,18 @@ This Hospital Management System (HMS) is a console application developed in C as
 - Login and logout from the system
 - Appointment management: View, reschedule, and cancel appointments electronically
 - Electronic Health Records (EHR) access (view only): Secure access to a portion of their medical history, prescriptions, appointment history, and billing information
-- Billing management (view and search): View billing details and manage insurance claims
 
 ### Doctor
 
 - Login and logout from the system
 - Doctor scheduler: Manage schedules and availability for appointments, allowing patients to book slots conveniently and reducing wait times
 - Secure EHR access (view only): Provide doctors with secure access to complete patient Electronic Health Records (EHR)
-- Reporting and analytics (view and search): Generate reports on patients or specific conditions to track treatment trends and measure outcomes
 
 ### Staff Nurse
 
 - Login and logout from the system
 - Doctor scheduler: Access doctor schedules and availability for appointments
 - Inventory management: Access and manage supplies and medications at the nurse's station directly through the HMS
-- Reporting and analytics (view and search): Generate reports on patients or specific units to identify trends and areas for improvement in care delivery
 
 ## Usage
 
